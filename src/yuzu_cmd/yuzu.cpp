@@ -241,9 +241,7 @@ int main(int argc, char** argv) {
         [](VideoCore::LoadCallbackStage, size_t value, size_t total) {});
 
     system.Run();
-    while (emu_window->IsOpen()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
+
     system.Pause();
     system.Shutdown();
 

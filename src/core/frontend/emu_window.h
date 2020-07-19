@@ -113,6 +113,9 @@ public:
     /// Returns if window is shown (not minimized)
     virtual bool IsShown() const = 0;
 
+    /// Whether the window is still open, and a close request hasn't yet been sent
+    virtual bool IsOpen() const = 0;
+
     /**
      * Signal that a touch pressed event has occurred (e.g. mouse click pressed)
      * @param framebuffer_x Framebuffer x-coordinate that was pressed

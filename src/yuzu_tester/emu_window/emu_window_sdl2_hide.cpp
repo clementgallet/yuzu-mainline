@@ -115,6 +115,10 @@ bool EmuWindow_SDL2_Hide::IsShown() const {
     return false;
 }
 
+bool EmuWindow_SDL2_Hide::IsOpen() const {
+    return true;
+}
+
 class SDLGLContext : public Core::Frontend::GraphicsContext {
 public:
     explicit SDLGLContext() {

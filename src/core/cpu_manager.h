@@ -60,6 +60,8 @@ public:
         return current_core.load();
     }
 
+    void RunThread(std::size_t core);
+
 private:
     static void GuestThreadFunction(void* cpu_manager);
     static void GuestRewindFunction(void* cpu_manager);
@@ -79,8 +81,6 @@ private:
     void SingleCorePause(bool paused);
 
     static void ThreadStart(CpuManager& cpu_manager, std::size_t core);
-
-    void RunThread(std::size_t core);
 
     struct CoreData {
         std::shared_ptr<Common::Fiber> host_context;

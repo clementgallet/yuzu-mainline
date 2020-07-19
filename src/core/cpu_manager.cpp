@@ -32,8 +32,6 @@ void CpuManager::Initialize() {
             core_data[core].host_thread =
                 std::make_unique<std::thread>(ThreadStart, std::ref(*this), core);
         }
-    } else {
-        core_data[0].host_thread = std::make_unique<std::thread>(ThreadStart, std::ref(*this), 0);
     }
 }
 
@@ -45,9 +43,6 @@ void CpuManager::Shutdown() {
             data.host_thread->join();
             data.host_thread.reset();
         }
-    } else {
-        core_data[0].host_thread->join();
-        core_data[0].host_thread.reset();
     }
 }
 
@@ -332,9 +327,6 @@ void CpuManager::RunThread(std::size_t core) {
     } else {
         name = "yuzu:CPUThread";
     }
-    MicroProfileOnThreadCreate(name.c_str());
-    Common::SetCurrentThreadName(name.c_str());
-    Common::SetCurrentThreadPriority(Common::ThreadPriority::High);
     auto& data = core_data[core];
     data.enter_barrier = std::make_unique<Common::Event>();
     data.exit_barrier = std::make_unique<Common::Event>();
@@ -346,7 +338,10 @@ void CpuManager::RunThread(std::size_t core) {
     /// Running
     while (running_mode) {
         data.is_running = false;
-        data.enter_barrier->Wait();
+        if (is_multicore) {
+            data.enter_barrier->Wait();
+        }
+
         if (sc_sync_first_use) {
             system.GPU().ObtainContext();
             sc_sync_first_use = false;
@@ -357,7 +352,9 @@ void CpuManager::RunThread(std::size_t core) {
         Common::Fiber::YieldTo(data.host_context, current_thread->GetHostContext());
         data.is_running = false;
         data.is_paused = true;
-        data.exit_barrier->Wait();
+        if (is_multicore) {
+            data.exit_barrier->Wait();
+        }
         data.is_paused = false;
     }
     /// Time to cleanup

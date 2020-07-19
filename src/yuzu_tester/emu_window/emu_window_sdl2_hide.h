@@ -23,6 +23,8 @@ public:
     /// Whether the screen is being shown or not.
     bool IsShown() const override;
 
+    bool IsOpen() const override;
+
     std::unique_ptr<Core::Frontend::GraphicsContext> CreateSharedContext() const override;
 
 private:

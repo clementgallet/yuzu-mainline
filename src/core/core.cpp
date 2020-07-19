@@ -128,7 +128,10 @@ struct System::Impl {
 
         kernel.Suspend(false);
         core_timing.SyncPause(false);
-        cpu_manager.Pause(false);
+        if (is_multicore)
+            cpu_manager.Pause(false);
+        else
+            cpu_manager.RunThread(0);
 
         return status;
     }

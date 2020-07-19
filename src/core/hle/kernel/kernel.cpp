@@ -194,9 +194,9 @@ struct KernelCore::Impl {
             single_core_thread_id = std::this_thread::get_id();
         }
         const std::thread::id this_id = std::this_thread::get_id();
-        const auto it = host_thread_ids.find(this_id);
+        // const auto it = host_thread_ids.find(this_id);
         ASSERT(core_id < Core::Hardware::NUM_CPU_CORES);
-        ASSERT(it == host_thread_ids.end());
+        // ASSERT(it == host_thread_ids.end());
         ASSERT(!registered_core_threads[core_id]);
         host_thread_ids[this_id] = static_cast<u32>(core_id);
         registered_core_threads.set(core_id);

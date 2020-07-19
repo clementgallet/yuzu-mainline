@@ -27,7 +27,7 @@ public:
     void PollEvents() override;
 
     /// Whether the window is still open, and a close request hasn't yet been sent
-    bool IsOpen() const;
+    bool IsOpen() const override;
 
     /// Returns if window is shown (not minimized)
     bool IsShown() const override;
