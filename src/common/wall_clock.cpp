@@ -4,6 +4,7 @@
 
 #include "common/uint128.h"
 #include "common/wall_clock.h"
+#include <iostream>
 
 #ifdef ARCHITECTURE_x86_64
 #include "common/x64/cpu_detect.h"
@@ -65,18 +66,8 @@ private:
 
 std::unique_ptr<WallClock> CreateBestMatchingClock(u32 emulated_cpu_frequency,
                                                    u32 emulated_clock_frequency) {
-    const auto& caps = GetCPUCaps();
-    u64 rtsc_frequency = 0;
-    if (caps.invariant_tsc) {
-        rtsc_frequency = EstimateRDTSCFrequency();
-    }
-    if (rtsc_frequency == 0) {
-        return std::make_unique<StandardWallClock>(emulated_cpu_frequency,
-                                                   emulated_clock_frequency);
-    } else {
-        return std::make_unique<X64::NativeClock>(emulated_cpu_frequency, emulated_clock_frequency,
-                                                  rtsc_frequency);
-    }
+    return std::make_unique<StandardWallClock>(emulated_cpu_frequency,
+                                               emulated_clock_frequency);
 }
 
 #else
