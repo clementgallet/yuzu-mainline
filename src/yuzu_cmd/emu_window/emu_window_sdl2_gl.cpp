@@ -23,17 +23,20 @@
 
 class SDLGLContext : public Core::Frontend::GraphicsContext {
 public:
-    explicit SDLGLContext() {
+    explicit SDLGLContext(SDL_Window* pwindow, SDL_GLContext pcontext) {
         // create a hidden window to make the shared context against
-        window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0,
-                                  SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
-        context = SDL_GL_CreateContext(window);
+        window = pwindow;
+        context = pcontext;
     }
 
     ~SDLGLContext() {
         DoneCurrent();
         SDL_GL_DeleteContext(context);
         SDL_DestroyWindow(window);
+    }
+
+    void SwapBuffers() override {
+        SDL_GL_SwapWindow(window);
     }
 
     void MakeCurrent() override {
@@ -117,22 +120,14 @@ EmuWindow_SDL2_GL::EmuWindow_SDL2_GL(InputCommon::InputSubsystem* input_subsyste
         exit(1);
     }
 
-    dummy_window = SDL_CreateWindow(NULL, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0,
-                                    SDL_WINDOW_HIDDEN | SDL_WINDOW_OPENGL);
-
     if (fullscreen) {
         Fullscreen();
     }
 
     window_context = SDL_GL_CreateContext(render_window);
-    core_context = CreateSharedContext();
 
     if (window_context == nullptr) {
         LOG_CRITICAL(Frontend, "Failed to create SDL2 GL context: {}", SDL_GetError());
-        exit(1);
-    }
-    if (core_context == nullptr) {
-        LOG_CRITICAL(Frontend, "Failed to create shared SDL2 GL context: {}", SDL_GetError());
         exit(1);
     }
 
@@ -160,5 +155,5 @@ EmuWindow_SDL2_GL::~EmuWindow_SDL2_GL() {
 }
 
 std::unique_ptr<Core::Frontend::GraphicsContext> EmuWindow_SDL2_GL::CreateSharedContext() const {
-    return std::make_unique<SDLGLContext>();
+    return std::make_unique<SDLGLContext>(render_window, window_context);
 }
